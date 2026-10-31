@@ -1,0 +1,12 @@
+services:
+  studio:
+    build: .
+    ports:
+      - "7860:7860"
+    env_file: ./backend/.env
+    volumes:
+      - studio-data:/home/user/data
+    restart: unless-stopped
+
+volumes:
+  studio-data:
