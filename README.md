@@ -4,6 +4,17 @@ An AI-powered blog generation platform that transforms a topic into a researched
 
 Built with **FastAPI, React, LangGraph, and Groq**, AI Blog Studio uses a multi-step agent workflow to research topics, plan content, write sections in parallel, and add relevant visuals.
 
+**Live demo**: https://ai-blog-studio-290d.onrender.com/
+
+> The demo runs on a free Render instance, so the first visit after a quiet period can take about a minute to wake. Access is protected by a code; contact the repository owner to try it.
+
+![Write.png](docs/Write.png)
+![Progress.png](docs/Progress.png) 
+![Library.png](docs/Library.png) 
+![Editor.png](docs/Editor.png) 
+![Sources.png](docs/Sources.png) 
+
+
 ## Features
 
 - **Intelligent Topic Routing:** Classifies topics as `closed_book`, `hybrid`, or `open_book` to determine whether web research is needed.
