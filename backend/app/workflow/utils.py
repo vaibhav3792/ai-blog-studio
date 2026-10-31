@@ -34,6 +34,31 @@ def clean_section(md: str, title: str) -> str:
     return md
 
 
+_LINK_RE = re.compile(r"(?<!!)\[([^\]]*)\]\(\s*<?([^)\s>]+)>?(?:\s+\"[^\"]*\")?\s*\)")
+
+
+def _norm_url(url: str) -> str:
+    return url.strip().lower().rstrip("/").split("#")[0]
+
+
+def strip_unverified_links(md: str, allowed_urls: Iterable[str]) -> str:
+    """Keep a Markdown link only if it points at a collected source (or is an in-page/relative link).
+
+    Language models invent plausible-looking URLs that return 404. Any external link that is not one
+    of the evidence URLs is replaced by its plain text. Fenced code blocks are left untouched.
+    """
+    allowed = {_norm_url(u) for u in allowed_urls}
+
+    def fix(match: re.Match) -> str:
+        text, url = match.group(1), match.group(2)
+        if not url.lower().startswith(("http://", "https://")):
+            return match.group(0)  # #anchors, images/..., mailto: etc.
+        return match.group(0) if _norm_url(url) in allowed else text
+
+    parts = re.split(r"(```.*?```)", md, flags=re.DOTALL)
+    return "".join(p if p.startswith("```") else _LINK_RE.sub(fix, p) for p in parts)
+
+
 def insert_after_intro(md: str, placeholder: str) -> str:
     """Put `placeholder` after the first plain paragraph of a section (never inside a code fence)."""
     blocks = re.split(r"\n\s*\n", md.strip())

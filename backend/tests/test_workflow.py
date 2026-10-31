@@ -87,3 +87,18 @@ def test_no_visual_llm_call_when_everything_is_off(fakes, monkeypatch):
     out = run()
     assert ("GlobalImagePlan", "fast") not in fakes.structured_calls
     assert "```mermaid" not in out["final"] and out["visuals"] == 0
+
+
+def test_strip_unverified_links_keeps_only_evidence_urls():
+    from app.workflow.utils import strip_unverified_links
+
+    md = (
+        "See [the docs](https://made.up/docs) and [real](https://example.com/a/) here.\n"
+        "![fig](images/a.png) and [top](#intro).\n"
+        "```\n[code](https://made.up/x)\n```\n"
+    )
+    out = strip_unverified_links(md, ["https://example.com/a"])
+    assert "[the docs]" not in out and "the docs and" in out
+    assert "[real](https://example.com/a/)" in out
+    assert "![fig](images/a.png)" in out and "[top](#intro)" in out
+    assert "[code](https://made.up/x)" in out

@@ -49,6 +49,10 @@ Grounding:
   If unsupported, write "Not found in provided sources."
 - If requires_citations==true (hybrid tasks): cite Evidence URLs for external claims.
 
+Links:
+- Only link to URLs listed in Evidence. Never invent, guess or recall a URL from memory.
+- If there is no Evidence, include no links at all; name tools and docs in plain text instead.
+
 Code:
 - If requires_code==true, include at least one minimal snippet.
 """

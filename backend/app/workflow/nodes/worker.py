@@ -7,7 +7,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from app.services import llm
 from app.workflow.prompts import WORKER_SYSTEM
 from app.workflow.schemas import EvidenceItem, Plan, Task
-from app.workflow.utils import clean_section, evidence_lines
+from app.workflow.utils import clean_section, evidence_lines, strip_unverified_links
 
 log = logging.getLogger(__name__)
 
@@ -47,7 +47,8 @@ def worker_node(payload: dict) -> dict:
         )
         if not raw:
             raise llm.LLMOutputError("empty section")
-        return {"sections": [(task.id, clean_section(raw, task.title))]}
+        section = strip_unverified_links(clean_section(raw, task.title), [e.url for e in evidence])
+        return {"sections": [(task.id, section)]}
     except llm.LLMConfigError:
         raise
     except Exception as exc:
