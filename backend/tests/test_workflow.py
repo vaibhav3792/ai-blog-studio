@@ -94,11 +94,13 @@ def test_strip_unverified_links_keeps_only_evidence_urls():
 
     md = (
         "See [the docs](https://made.up/docs) and [real](https://example.com/a/) here.\n"
+        "Also [rel](/docs/x) and [bare](example.com/x).\n"
         "![fig](images/a.png) and [top](#intro).\n"
         "```\n[code](https://made.up/x)\n```\n"
     )
     out = strip_unverified_links(md, ["https://example.com/a"])
     assert "[the docs]" not in out and "the docs and" in out
+    assert "[rel]" not in out and "[bare]" not in out
     assert "[real](https://example.com/a/)" in out
     assert "![fig](images/a.png)" in out and "[top](#intro)" in out
     assert "[code](https://made.up/x)" in out
@@ -111,3 +113,24 @@ def test_remove_no_source_notes():
     out = remove_no_source_notes(md)
     assert "provided sources" not in out.lower()
     assert "Good text." in out and "- point" in out
+
+
+def test_drop_dead_links_removes_only_404_and_unreachable():
+    import httpx
+    from app.services.search import drop_dead_links
+    from app.workflow.schemas import EvidenceItem
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        host = request.url.host
+        if host == "gone.test":
+            return httpx.Response(404)
+        if host == "blocked.test":
+            return httpx.Response(403)
+        if host == "down.test":
+            raise httpx.ConnectError("no host")
+        return httpx.Response(200)
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    items = [EvidenceItem(title=h, url=f"https://{h}/p") for h in ("ok.test", "gone.test", "blocked.test", "down.test")]
+    kept = [e.title for e in drop_dead_links(items, client=client)]
+    assert kept == ["ok.test", "blocked.test"]

@@ -51,6 +51,9 @@ def research_node(state: State) -> dict:
         cutoff = date.fromisoformat(state["as_of"]) - timedelta(days=recency_days)
         evidence = [e for e in evidence if (d := _iso_to_date(e.published_at)) and d >= cutoff]
 
+    if s.check_links and evidence:
+        evidence = search.drop_dead_links(evidence)
+
     evidence = evidence[: s.max_evidence]
     if not evidence:
         warnings.append("No usable sources were found, so the draft avoids claims that need citations.")

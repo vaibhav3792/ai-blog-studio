@@ -42,7 +42,7 @@ def _norm_url(url: str) -> str:
 
 
 def strip_unverified_links(md: str, allowed_urls: Iterable[str]) -> str:
-    """Keep a Markdown link only if it points at a collected source (or is an in-page/relative link).
+    """Keep a Markdown link only if it points at a collected source (or is an in-page anchor or mailto link).
 
     Language models invent plausible-looking URLs that return 404. Any external link that is not one
     of the evidence URLs is replaced by its plain text. Fenced code blocks are left untouched.
@@ -51,8 +51,10 @@ def strip_unverified_links(md: str, allowed_urls: Iterable[str]) -> str:
 
     def fix(match: re.Match) -> str:
         text, url = match.group(1), match.group(2)
-        if not url.lower().startswith(("http://", "https://")):
-            return match.group(0)  # #anchors, images/..., mailto: etc.
+        if url.startswith("#") or url.lower().startswith("mailto:"):
+            return match.group(0)  # in-page anchors and email links
+        # External links must be collected sources. Relative paths ("/docs/x") and scheme-less
+        # addresses ("example.com/x") would resolve against this app's own domain and 404.
         return match.group(0) if _norm_url(url) in allowed else text
 
     parts = re.split(r"(```.*?```)", md, flags=re.DOTALL)

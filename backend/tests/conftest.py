@@ -20,6 +20,7 @@ def env(tmp_path, monkeypatch):
     monkeypatch.setenv("CLOUDFLARE_ACCOUNT_ID", "acct123")
     monkeypatch.setenv("CLOUDFLARE_API_TOKEN", "cf-token")
     monkeypatch.setenv("MAX_IMAGES", "2")
+    monkeypatch.setenv("CHECK_LINKS", "false")  # tests never touch the network
     get_settings.cache_clear()
     llm.reset_llm_cache()
     runner.reset()

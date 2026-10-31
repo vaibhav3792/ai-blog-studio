@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     max_research_queries: int = 6
     results_per_query: int = 5
     max_evidence: int = 20
+    check_links: bool = True  # drop sources whose page no longer exists (404/410)
 
     # Cloudflare Workers AI
     cloudflare_account_id: str = ""
