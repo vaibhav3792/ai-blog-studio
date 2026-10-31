@@ -134,3 +134,13 @@ def test_drop_dead_links_removes_only_404_and_unreachable():
     items = [EvidenceItem(title=h, url=f"https://{h}/p") for h in ("ok.test", "gone.test", "blocked.test", "down.test")]
     kept = [e.title for e in drop_dead_links(items, client=client)]
     assert kept == ["ok.test", "blocked.test"]
+
+
+def test_name_generic_links_uses_site_name():
+    from app.workflow.utils import name_generic_links
+
+    md = "Big news. ([Source](https://www.reuters.com/a)) And [Google announced](https://blog.google/x) it.\n```\n[Source](https://x.y/z)\n```\n"
+    out = name_generic_links(md)
+    assert "[reuters.com](https://www.reuters.com/a)" in out
+    assert "[Google announced](https://blog.google/x)" in out
+    assert "[Source](https://x.y/z)" in out

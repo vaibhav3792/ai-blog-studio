@@ -61,6 +61,28 @@ def strip_unverified_links(md: str, allowed_urls: Iterable[str]) -> str:
     return "".join(p if p.startswith("```") else _LINK_RE.sub(fix, p) for p in parts)
 
 
+_GENERIC_LINK_TEXT = {"source", "sources", "link", "here", "read more", "more", "ref", "reference", "citation", "this", "article"}
+
+
+def name_generic_links(md: str) -> str:
+    """Turn leftover '[Source](url)' links into '[site.com](url)' so every link says where it goes.
+
+    Fenced code blocks are left untouched.
+    """
+    from urllib.parse import urlparse
+
+    def fix(match: re.Match) -> str:
+        text, url = match.group(1), match.group(2)
+        label = text.strip().strip("[]").lower()
+        if label not in _GENERIC_LINK_TEXT and not label.isdigit():
+            return match.group(0)
+        host = (urlparse(url).hostname or "").removeprefix("www.")
+        return f"[{host}]({url})" if host else match.group(0)
+
+    parts = re.split(r"(```.*?```)", md, flags=re.DOTALL)
+    return "".join(p if p.startswith("```") else _LINK_RE.sub(fix, p) for p in parts)
+
+
 _NO_SOURCE_LINE = re.compile(
     r"^[\s>*_-]*(?:(?:sources?|citations?)[\s:*_]*)?not found in provided sources\.?[\s*_]*$",
     re.IGNORECASE | re.MULTILINE,

@@ -45,12 +45,13 @@ Scope guard:
 
 Grounding:
 - If mode=="open_book": do not introduce any specific event/company/model/funding/policy claim unless supported by provided Evidence URLs.
-  For each supported claim, attach a Markdown link ([Source](URL)).
+  For each supported claim, link the words that name the source or the claim itself, e.g. "[Google announced](URL) a new TPU" or "according to [Reuters](URL)".
   If a claim is not supported, leave it out. Never write notes such as "Not found in provided sources" or "Source: none".
-- If requires_citations==true (hybrid tasks): cite Evidence URLs for external claims.
+- If requires_citations==true (hybrid tasks): cite Evidence URLs for external claims, using the same inline style.
 
 Links:
 - Only link to URLs listed in Evidence. Never invent, guess or recall a URL from memory.
+- Make link text descriptive, woven into the sentence. Never use "Source", "source", "link", "here" or "read more" as link text, and never put a lone link after a sentence.
 - If there is no Evidence, include no links at all; name tools and docs in plain text instead.
 
 Code:
