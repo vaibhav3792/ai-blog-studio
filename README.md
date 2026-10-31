@@ -194,16 +194,16 @@ pytest
 
 ## Deployment
 
-AI Blog Studio can be deployed using Docker on platforms such as [Hugging Face Spaces](https://huggingface.co/spaces).
+AI Blog Studio can be deployed using Docker on platforms such as [Render](https://render.com).
 
-For a Hugging Face deployment:
+For a Render deployment:
 
-1. Create a new Space and select the **Docker** SDK.
-2. Push the project repository to the Space.
-3. Add the required API keys under **Settings → Variables and secrets**.
+1. Push the project repository to GitHub.
+2. In Render, create a new **Web Service**, connect the repository, and select the **Docker** language and the **Free** instance type.
+3. Add the required API keys under **Environment Variables**, along with `PORT=7860`.
 4. Configure `ACCESS_CODE` and `DAILY_GENERATION_LIMIT` to protect a public deployment.
 
-**Note:** Free hosting environments may have ephemeral storage or inactivity-based sleep. Export important blog posts to keep a local copy.
+**Note:** Free hosting environments may have ephemeral storage or inactivity-based sleep. On Render's free tier, the service sleeps after 15 minutes without visitors and takes about a minute to wake. Export important blog posts to keep a local copy.
 
 ## Security
 
