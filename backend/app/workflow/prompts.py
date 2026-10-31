@@ -46,7 +46,7 @@ Scope guard:
 Grounding:
 - If mode=="open_book": do not introduce any specific event/company/model/funding/policy claim unless supported by provided Evidence URLs.
   For each supported claim, attach a Markdown link ([Source](URL)).
-  If unsupported, write "Not found in provided sources."
+  If a claim is not supported, leave it out. Never write notes such as "Not found in provided sources" or "Source: none".
 - If requires_citations==true (hybrid tasks): cite Evidence URLs for external claims.
 
 Links:

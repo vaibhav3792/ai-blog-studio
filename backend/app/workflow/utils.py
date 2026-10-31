@@ -59,6 +59,20 @@ def strip_unverified_links(md: str, allowed_urls: Iterable[str]) -> str:
     return "".join(p if p.startswith("```") else _LINK_RE.sub(fix, p) for p in parts)
 
 
+_NO_SOURCE_LINE = re.compile(
+    r"^[\s>*_-]*(?:(?:sources?|citations?)[\s:*_]*)?not found in provided sources\.?[\s*_]*$",
+    re.IGNORECASE | re.MULTILINE,
+)
+_NO_SOURCE_PHRASE = re.compile(r"\s*\(?\[?not found in provided sources\.?\]?\)?", re.IGNORECASE)
+
+
+def remove_no_source_notes(md: str) -> str:
+    """Delete leftover 'Not found in provided sources' notes the model sometimes writes."""
+    md = _NO_SOURCE_LINE.sub("", md)
+    md = _NO_SOURCE_PHRASE.sub("", md)
+    return re.sub(r"\n{3,}", "\n\n", md).strip()
+
+
 def insert_after_intro(md: str, placeholder: str) -> str:
     """Put `placeholder` after the first plain paragraph of a section (never inside a code fence)."""
     blocks = re.split(r"\n\s*\n", md.strip())

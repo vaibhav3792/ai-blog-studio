@@ -102,3 +102,12 @@ def test_strip_unverified_links_keeps_only_evidence_urls():
     assert "[real](https://example.com/a/)" in out
     assert "![fig](images/a.png)" in out and "[top](#intro)" in out
     assert "[code](https://made.up/x)" in out
+
+
+def test_remove_no_source_notes():
+    from app.workflow.utils import remove_no_source_notes
+
+    md = "## Title\n\nGood text.\n\nSource: Not found in provided sources.\n\n- point (Not found in provided sources.)\n"
+    out = remove_no_source_notes(md)
+    assert "provided sources" not in out.lower()
+    assert "Good text." in out and "- point" in out
